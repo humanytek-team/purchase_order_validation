@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+
+        <record id="res_company_mrp_approved_config" model="ir.ui.view">
+            <field name="name">res.company.mrp.approved.config</field>
+            <field name="model">res.company</field>
+            <field name="priority">19</field>
+            <field name="inherit_id" ref="purchase.mrp_company"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='logistics_grp']" position="inside">
+                        <field name="po_double_validation_product" widget="radio"/>
+                        <field name="po_double_validation_product_qty"
+                            attrs="{'invisible': [('po_double_validation_product', '=', 'one_step')]}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>
