@@ -22,11 +22,15 @@
 ###############################################################################
 
 {
-    'name': "Autorización en la orden de compra",
+    'name': "Authorize purchase orders by product limit",
+    'description': '''Adds option "Approval levels by product limit" in
+    settings of the company to limit the quantity of products in purchase
+    orders.
+    ''',
     'author': "Humanytek",
     'website': "http://www.humanytek.com",
     'category': 'Purchase',
-    'version': '1.0.0',
+    'version': '0.1.0',
     'depends': ['purchase'],
     'data': [
         'views/company_view.xml',

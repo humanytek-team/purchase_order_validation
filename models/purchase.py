@@ -27,7 +27,10 @@ from openerp import fields, api, models
 
 class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
-    _name = "purchase.order"
+
+    product_qty_total = fields.Float(
+        compute='_compute_qty',
+        string='Total product quantity')
 
     @api.depends('order_line.product_qty')
     def _compute_qty(self):
@@ -39,33 +42,19 @@ class PurchaseOrder(models.Model):
                 'product_qty_total': qty_total,
             })
 
-    product_qty_total = fields.Float(compute='_compute_qty',
-                                    string='Cantidad total de productos',
-                                    default=0)
-
     @api.multi
-    def button_confirm(self):
-        for order in self:
-            if order.state not in ['draft', 'sent']:
-                continue
-            order._add_supplier_to_product()
-            # Deal with double validation process
-            #if (order.company_id.po_double_validation == 'one_step'\ and
-                    #order.company_id.po_double_validation_product == 'one_step')
-                    #or (order.company_id.po_double_validation == 'two_step'\
-                        #and order.amount_total < self.env.user.company_id.currency_id.compute(order.company_id.po_double_validation_amount, order.currency_id))\
-                    #or order.user_has_groups('purchase.group_purchase_manager'):
-                #order.button_approve()
-            #else:
-                #order.write({'state': 'to approve'})
+    def button_confirm(self):        
+        super(PurchaseOrder, self).button_confirm()
 
-            if ((order.company_id.po_double_validation == 'two_step'\
-                        and order.amount_total >= self.env.user.company_id.currency_id.compute(order.company_id.po_double_validation_amount, order.currency_id))\
-                    or (order.company_id.po_double_validation_product == 'two_step'\
-                        and order.product_qty_total >= self.env.user.company_id.po_double_validation_product_qty)) \
-                    and not order.user_has_groups('purchase.group_purchase_manager'):
-                order.write({'state': 'to approve'})
-            else:
+        for order in self:
+
+            if order.company_id.po_double_validation == 'one_step'\
+                    or (order.company_id.po_double_validation == 'two_step'\
+                        and order.product_qty_total <
+                        self.env.user.company_id.po_double_validation_product_qty)\
+                    or order.user_has_groups('purchase.group_purchase_manager'):
                 order.button_approve()
+            else:
+                order.write({'state': 'to approve'})
 
         return {}
