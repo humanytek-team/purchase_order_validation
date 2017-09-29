@@ -22,18 +22,14 @@
 ###############################################################################
 
 from openerp import fields, models
+from openerp.tools.translate import _
 
 
 class Company(models.Model):
     _inherit = 'res.company'
-
-    po_double_validation_product = fields.Selection([
-        ('one_step', 'Confirmar pedidos de compra en un único paso'),
-        ('two_step', 'Requerir dos niveles de aprobación para confirmar un '+\
-        'pedido de compra')
-        ], string="Niveles de aprobación por cantidad de productos",
-        default='one_step',
-        help="")
+    
     po_double_validation_product_qty = fields.Float(
-        string=u'Cantidad de productos para doble validación', default=20,
-        help="")
+        string=u'Limit by total quantity of products',
+        default=20,
+        help="Minimum quantity total of products for which a double validation"
+            "is required")
