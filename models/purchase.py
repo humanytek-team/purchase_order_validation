@@ -43,17 +43,18 @@ class PurchaseOrder(models.Model):
             })
 
     @api.multi
-    def button_confirm(self):        
+    def button_confirm(self):
         super(PurchaseOrder, self).button_confirm()
 
         for order in self:
 
             if order.company_id.po_double_validation == 'one_step'\
-                    or (order.company_id.po_double_validation == 'two_step'\
+                    or (order.company_id.po_double_validation == 'two_step'
                         and order.product_qty_total <
                         self.env.user.company_id.po_double_validation_product_qty)\
                     or order.user_has_groups('purchase.group_purchase_manager'):
-                order.button_approve()
+                if order.state != 'purchase':
+                    order.button_approve()
             else:
                 order.write({'state': 'to approve'})
 
